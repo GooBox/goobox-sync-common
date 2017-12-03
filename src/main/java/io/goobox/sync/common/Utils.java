@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Kaloyan Raev
+ * Copyright (C) 2017 Kaloyan Raev, Junpei Kawamoto
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 public class Utils {
@@ -90,6 +92,38 @@ public class Utils {
             return null;
 
         return new String(data, 0, size).replaceAll("\\r\\n", "");
+    }
+
+    private static final List<String> SYSTEM_FILES = Arrays.asList("desktop.ini", "thumbs.db", ".ds_store");
+
+    /**
+     * Returns true if the given path should be excluded from cloud synchronization.
+     * <p>
+     * The following files will be excluded:
+     * - system files: desktop.ini, thumbs.db, .ds_store
+     * - temporary files:
+     * -- file its name starts with ~$ or .~,
+     * -- file its name starts with ~ and ends with .tmp
+     * - files and directories their names end with spaces.
+     *
+     * @param path to be evaluated.
+     * @return true if the given path should be excluded.
+     */
+    public static boolean isExcluded(Path path) {
+
+        final String filename = path.getFileName().toString().toLowerCase();
+        for (final String name : SYSTEM_FILES) {
+            if (filename.equals(name)) {
+                return true;
+            }
+        }
+        if (filename.startsWith("~$") || filename.startsWith(".~")) {
+            return true;
+        } else if (filename.startsWith("~") && filename.endsWith(".tmp")) {
+            return true;
+        }
+        return filename.endsWith(" ");
+
     }
 
 }
