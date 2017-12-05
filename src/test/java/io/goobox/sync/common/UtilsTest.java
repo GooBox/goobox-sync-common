@@ -17,7 +17,15 @@
 
 package io.goobox.sync.common;
 
+import mockit.Expectations;
+import mockit.Mocked;
+import mockit.integration.junit4.JMockit;
+import org.apache.commons.io.FileUtils;
+import org.joda.time.format.ISODateTimeFormat;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,10 +35,24 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(JMockit.class)
 public class UtilsTest {
+
+    private Path tmpDir;
+
+    @Before
+    public void setUp() throws IOException {
+        tmpDir = Files.createTempDirectory(null);
+    }
+
+    @After
+    public void tearDown() throws IOException {
+        FileUtils.deleteDirectory(tmpDir.toFile());
+    }
 
     @Test
     public void isExcluded() throws IOException {
@@ -66,6 +88,46 @@ public class UtilsTest {
             assertFalse(Utils.isExcluded(path.toAbsolutePath()));
         });
 
+    }
+
+    @Test
+    public void conflictedCopyPath(@Mocked System system) throws IOException {
+
+        final String userName = "example";
+        final long currentTime = 10000000L;
+        final String date = ISODateTimeFormat.date().print(currentTime);
+
+        new Expectations() {{
+            System.getProperty("user.name");
+            result = userName;
+            System.currentTimeMillis();
+            result = currentTime;
+        }};
+
+        class Fixture {
+            private String input;
+            private String expected;
+
+            private Fixture(String input, String expected) {
+                this.input = input;
+                this.expected = expected;
+            }
+        }
+        final String template = "%s (%s's conflicted copy %s)";
+        final List<Fixture> fixtures = Arrays.asList(
+                new Fixture("sample", String.format(template, "sample", userName, date)),
+                new Fixture("sample", String.format(template, "sample", userName, date) + " 1"),
+                new Fixture("sample.ext", String.format(template, "sample", userName, date) + ".ext"),
+                new Fixture("sample.ext", String.format(template, "sample", userName, date) + " 1.ext"),
+                new Fixture("sample.ext.ext2", String.format(template, "sample", userName, date) + ".ext.ext2"),
+                new Fixture("sample.ext.ext2", String.format(template, "sample", userName, date) + " 1.ext.ext2")
+        );
+
+        for (Fixture fixture : fixtures) {
+            final Path res = Utils.conflictedCopyPath(tmpDir.resolve(fixture.input));
+            assertEquals(tmpDir.resolve(fixture.expected), res);
+            assertTrue(res.toFile().createNewFile());
+        }
 
     }
 

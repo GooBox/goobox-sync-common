@@ -17,6 +17,7 @@
 package io.goobox.sync.common;
 
 import net.harawata.appdirs.AppDirsFactory;
+import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -29,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class Utils {
 
     private static String OS = null;
@@ -123,6 +125,51 @@ public class Utils {
             return true;
         }
         return filename.endsWith(" ");
+
+    }
+
+    /**
+     * Returns a path for a conflicted copy of the given local file.
+     * <p>
+     * A file name pattern of a conflicted copy is as follows:
+     * `original file name` (`user name`'s conflicted copy `date`) `counter`(.ext)
+     * <p>
+     * if counter is 0, it'll be omitted.
+     *
+     * @param localPath for which a conflicted copy path is going to be created.
+     * @return a path of which the corresponding file doesn't exists.
+     */
+    public static Path conflictedCopyPath(Path localPath) {
+
+        String name = localPath.getFileName().toString();
+        String ext = "";
+        final int idx = name.indexOf(".");
+        if (idx != -1) {
+            ext = name.substring(idx);
+            name = name.substring(0, idx);
+        }
+
+        String fileName = String.format(
+                "%s (%s's conflicted copy %s)%s",
+                name,
+                System.getProperty("user.name"),
+                ISODateTimeFormat.date().print(System.currentTimeMillis()),
+                ext);
+        int c = 0;
+
+        Path candidate = localPath.getParent().resolve(fileName);
+        while (candidate.toFile().exists()) {
+            c++;
+            fileName = String.format(
+                    "%s (%s's conflicted copy %s) %d%s",
+                    name,
+                    System.getProperty("user.name"),
+                    ISODateTimeFormat.date().print(System.currentTimeMillis()),
+                    c,
+                    ext);
+            candidate = localPath.getParent().resolve(fileName);
+        }
+        return candidate;
 
     }
 
