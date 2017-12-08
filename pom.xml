@@ -11,6 +11,13 @@
   <name>Goobox common library for sync apps</name>
   <url>https://github.com/GooBox/goobox-sync-common</url>
 
+  <licenses>
+    <license>
+      <name>GNU General Public License v3.0</name>
+      <url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
+    </license>
+  </licenses>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -75,7 +82,7 @@
       <url>http://jcenter.bintray.com</url>
     </repository>
   </repositories>
-  
+
   <distributionManagement>
     <repository>
       <id>bintray</id>
