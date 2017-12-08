@@ -75,5 +75,12 @@
       <url>http://jcenter.bintray.com</url>
     </repository>
   </repositories>
+  
+  <distributionManagement>
+    <repository>
+      <id>bintray</id>
+      <url>https://api.bintray.com/maven/goobox/maven/goobox-sync-common/;publish=1</url>
+    </repository>
+  </distributionManagement>
 
 </project>
