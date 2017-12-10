@@ -23,6 +23,11 @@
 *.ipr
 *.iml
 
+# Eclipse project files
+/.project
+/.classpath
+/.settings/
+
 # exclude jar for gradle wrapper
 !gradle/wrapper/*.jar
 
