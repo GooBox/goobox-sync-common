@@ -23,12 +23,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class Utils {
@@ -54,18 +50,7 @@ public class Utils {
     public static Path getSyncDir() {
         return Utils.getHomeDir().resolve("Goobox");
     }
-
-    public static Path getStorjConfigDir() {
-        return Utils.getHomeDir().resolve(".storj");
-    }
-
-    public static long getTime(String storjTimestamp) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        Date date = sdf.parse(storjTimestamp);
-        return date.getTime();
-    }
-
+    
     private static String getOsName() {
         if (OS == null) {
             OS = System.getProperty("os.name");
