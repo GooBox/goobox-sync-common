@@ -38,31 +38,31 @@ public class SystemTrayHelper {
     private final static URL ICON_IDLE = SystemTrayHelper.class.getResource("tray-idle.png");
     private final static URL ICON_SYNC = SystemTrayHelper.class.getResource("tray-sync.png");
 
-    private final static String TOOLTIP_IDLE = "Idle";
-    private final static String TOOLTIP_SYNC = "Synchronizing";
+    private final static String STATE_IDLE = "Idle";
+    private final static String STATE_SYNC = "Synchronizing";
 
     private static SystemTray systemTray;
     private static ShutdownListener shutdownListener;
 
     /**
-     * Sets the system tray icon to idle mode.
+     * Sets the system tray icon to idle state.
      */
     public static void setIdle() {
         if (initialized()) {
             systemTray.setImage(ICON_IDLE);
-            systemTray.setStatus(TOOLTIP_IDLE);
-            systemTray.setTooltip(TOOLTIP_IDLE);
+            systemTray.setStatus(STATE_IDLE);
+            systemTray.setTooltip(STATE_IDLE);
         }
     }
 
     /**
-     * Sets the system tray icon to synchronizing mode.
+     * Sets the system tray icon to synchronizing state.
      */
     public static void setSynchronizing() {
         if (initialized()) {
             systemTray.setImage(ICON_SYNC);
-            systemTray.setStatus(TOOLTIP_SYNC);
-            systemTray.setTooltip(TOOLTIP_SYNC);
+            systemTray.setStatus(STATE_SYNC);
+            systemTray.setTooltip(STATE_SYNC);
         }
     }
 
