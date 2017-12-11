@@ -6,7 +6,7 @@
 
   <groupId>io.goobox</groupId>
   <artifactId>goobox-sync-common</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
   <packaging>jar</packaging>
 
   <name>Goobox common library for sync apps</name>
@@ -88,6 +88,11 @@
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
       <version>2.9.9</version>
+    </dependency>
+    <dependency>
+      <groupId>com.dorkbox</groupId>
+      <artifactId>SystemTray</artifactId>
+      <version>3.12</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

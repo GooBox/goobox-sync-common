@@ -16,9 +16,6 @@
  */
 package io.goobox.sync.common;
 
-import net.harawata.appdirs.AppDirsFactory;
-import org.joda.time.format.ISODateTimeFormat;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -26,14 +23,17 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
+import org.joda.time.format.ISODateTimeFormat;
+
+import dorkbox.util.OS;
+import net.harawata.appdirs.AppDirsFactory;
+
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class Utils {
 
-    private static String OS = null;
-
     public static Path getHomeDir() {
         String path = System.getProperty("user.home");
-        if (isWindows() && !isPureAscii(path)) {
+        if (OS.isWindows() && !isPureAscii(path)) {
             try {
                 path = getMSDOSPath(path);
             } catch (IOException | InterruptedException e) {
@@ -49,17 +49,6 @@ public class Utils {
 
     public static Path getSyncDir() {
         return Utils.getHomeDir().resolve("Goobox");
-    }
-    
-    private static String getOsName() {
-        if (OS == null) {
-            OS = System.getProperty("os.name");
-        }
-        return OS;
-    }
-
-    private static boolean isWindows() {
-        return getOsName().startsWith("Windows");
     }
 
     private static boolean isPureAscii(String path) {
