@@ -23,7 +23,6 @@ import java.net.URL;
 
 import dorkbox.systemTray.Menu;
 import dorkbox.systemTray.MenuItem;
-import dorkbox.systemTray.Separator;
 import dorkbox.systemTray.SystemTray;
 import dorkbox.util.Desktop;
 import dorkbox.util.OS;
@@ -96,7 +95,6 @@ public class SystemTrayHelper {
         }
 
         Menu mainMenu = systemTray.getMenu();
-        mainMenu.add(new Separator());
         mainMenu.add(new MenuItem("Open Goobox Folder", new ActionListener() {
             public void actionPerformed(final ActionEvent e) {
                 try {
@@ -111,7 +109,6 @@ public class SystemTrayHelper {
                 }
             }
         })).setShortcut('o');
-        mainMenu.add(new Separator());
         systemTray.getMenu().add(new MenuItem("Quit Goobox", new ActionListener() {
             public void actionPerformed(final ActionEvent e) {
                 systemTray.shutdown();
