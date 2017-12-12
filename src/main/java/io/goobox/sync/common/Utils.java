@@ -31,6 +31,8 @@ import net.harawata.appdirs.AppDirsFactory;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class Utils {
 
+    public static final String APP_NAME = "Goobox";
+
     public static Path getHomeDir() {
         String path = System.getProperty("user.home");
         if (OS.isWindows() && !isPureAscii(path)) {
@@ -44,11 +46,11 @@ public class Utils {
     }
 
     public static Path getDataDir() {
-        return Paths.get(AppDirsFactory.getInstance().getUserDataDir("Goobox", null, ""));
+        return Paths.get(AppDirsFactory.getInstance().getUserDataDir(APP_NAME, null, ""));
     }
 
     public static Path getSyncDir() {
-        return Utils.getHomeDir().resolve("Goobox");
+        return Utils.getHomeDir().resolve(APP_NAME);
     }
 
     private static boolean isPureAscii(String path) {
