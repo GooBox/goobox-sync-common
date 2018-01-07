@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
 
 import dorkbox.systemTray.Menu;
 import dorkbox.systemTray.MenuItem;
@@ -27,7 +28,6 @@ import dorkbox.systemTray.SystemTray;
 import dorkbox.util.Desktop;
 import dorkbox.util.OS;
 import dorkbox.util.SwingUtil;
-import io.goobox.sync.common.Utils;
 
 /**
  * Helper for managing the Goobox system tray icon.
@@ -47,7 +47,7 @@ public class SystemTrayHelper {
      * Sets the system tray icon to idle state.
      */
     public static void setIdle() {
-        if (initialized()) {
+        if (systemTray != null) {
             systemTray.setImage(ICON_IDLE);
             systemTray.setStatus(STATE_IDLE);
             systemTray.setTooltip(STATE_IDLE);
@@ -58,7 +58,7 @@ public class SystemTrayHelper {
      * Sets the system tray icon to synchronizing state.
      */
     public static void setSynchronizing() {
-        if (initialized()) {
+        if (systemTray != null) {
             systemTray.setImage(ICON_SYNC);
             systemTray.setStatus(STATE_SYNC);
             systemTray.setTooltip(STATE_SYNC);
@@ -82,7 +82,7 @@ public class SystemTrayHelper {
         shutdownListener = listener;
     }
 
-    private static boolean init() {
+    public static boolean init(Path syncDir) {
         // Set Native look and feel on Windows instead of Swing
         if (OS.isWindows()) {
             SwingUtil.setLookAndFeel(null);
@@ -98,7 +98,7 @@ public class SystemTrayHelper {
         mainMenu.add(new MenuItem("Open Goobox Folder", new ActionListener() {
             public void actionPerformed(final ActionEvent e) {
                 try {
-                    String path = Utils.getSyncDir().toString();
+                    String path = syncDir.toString();
                     if (OS.isWindows()) {
                         Desktop.browseDirectory(path);
                     } else {
@@ -121,10 +121,6 @@ public class SystemTrayHelper {
         })).setShortcut('q');
 
         return true;
-    }
-
-    private static boolean initialized() {
-        return systemTray != null || init();
     }
 
 }
