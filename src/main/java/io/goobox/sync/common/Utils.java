@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.joda.time.format.ISODateTimeFormat;
 
-import dorkbox.util.OS;
 import net.harawata.appdirs.AppDirsFactory;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
@@ -33,9 +32,11 @@ public class Utils {
 
     public static final String APP_NAME = "Goobox";
 
+    private static String OS = null;
+
     public static Path getHomeDir() {
         String path = System.getProperty("user.home");
-        if (OS.isWindows() && !isPureAscii(path)) {
+        if (isWindows() && !isPureAscii(path)) {
             try {
                 path = getMSDOSPath(path);
             } catch (IOException | InterruptedException e) {
@@ -51,6 +52,17 @@ public class Utils {
 
     public static Path getSyncDir() {
         return Utils.getHomeDir().resolve(APP_NAME);
+    }
+
+    private static String getOsName() {
+        if (OS == null) {
+            OS = System.getProperty("os.name");
+        }
+        return OS;
+    }
+
+    private static boolean isWindows() {
+        return getOsName().startsWith("Windows");
     }
 
     private static boolean isPureAscii(String path) {

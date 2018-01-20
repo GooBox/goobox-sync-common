@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobox.sync.common.systemtray;
+package io.goobox.sync.common;
 
 /**
  * The listener interface for receiving the shutdown event.
