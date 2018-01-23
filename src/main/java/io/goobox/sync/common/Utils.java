@@ -47,7 +47,7 @@ public class Utils {
     }
 
     public static Path getDataDir() {
-        return Paths.get(AppDirsFactory.getInstance().getUserDataDir(APP_NAME, null, ""));
+        return Paths.get(AppDirsFactory.getInstance().getUserDataDir(APP_NAME, null, "", true));
     }
 
     public static Path getSyncDir() {
