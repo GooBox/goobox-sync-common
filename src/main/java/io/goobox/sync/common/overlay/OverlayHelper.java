@@ -50,6 +50,8 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
 
     private int globalStateIconId = OverlayIcon.NONE.id();
 
+    private boolean shutdown = false;
+
     public OverlayHelper(Path syncDir, OverlayIconProvider syncStateProvider) {
         this.syncDir = syncDir;
         this.iconProvider = syncStateProvider;
@@ -59,7 +61,40 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
         }
 
         nativityControl = NativityControlUtil.getNativityControl();
-        nativityControl.connect();
+
+        if (nativityControl != null) {
+            new Thread() {
+                public void run() {
+                    init();
+                };
+            }.start();
+        }
+    }
+
+    private void init() {
+        synchronized (this) {
+            while (!shutdown) {
+                if (nativityControl.connect()) {
+                    // successfully connected - exit the loop
+                    logger.debug("Successfully connected to native service.");
+                    break;
+                }
+
+                // Connection failed. Most probably the port has not been released yet from a
+                // previous run of the app. Retry in 30 seconds.
+                logger.debug("Connection to native service failed. Retry in 30 seconds.");
+                try {
+                    wait(30000);
+                } catch (InterruptedException e) {
+                    logger.debug("init interrupted", e);
+                    return;
+                }
+            }
+        }
+
+        if (shutdown) {
+            return;
+        }
 
         nativityControl.setFilterFolder(syncDir.toString());
 
@@ -76,7 +111,7 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
 
         /* Context Menus */
         // No context menu yet
-        // ContextMenuControlUtil.getContextMenuControl(nativityControl, this);
+        // ContextMenuControlUtil.getContextMenuControl(nativityControl, this);refresh
     }
 
     public void setOK() {
@@ -102,9 +137,18 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
             return;
         }
 
+        // interupt init() if still running
+        synchronized (this) {
+            shutdown = true;
+            notify();
+        }
+
         globalStateIconId = OverlayIcon.NONE.id();
         refresh();
-        nativityControl.disconnect();
+
+        if (nativityControl != null) {
+            nativityControl.disconnect();
+        }
     }
 
     public void refresh(Path path) {
@@ -118,7 +162,9 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
     }
 
     private void refresh() {
-        fileIconControl.refreshIcons(new String[] { syncDir.toString() });
+        if (fileIconControl != null) {
+            fileIconControl.refreshIcons(new String[] { syncDir.toString() });
+        }
     }
 
     /* FileIconControlCallback used by Windows and Mac */
