@@ -57,18 +57,14 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
         this.syncDir = syncDir;
         this.iconProvider = syncStateProvider;
 
-        if (!OSDetector.isWindows()) {
+        if (!OSDetector.isWindows() && !OSDetector.isApple()) {
             return;
         }
 
         nativityControl = NativityControlUtil.getNativityControl();
 
         if (nativityControl != null) {
-            new Thread() {
-                public void run() {
-                    init();
-                };
-            }.start();
+            new Thread(this::init).start();
         }
     }
 
@@ -100,15 +96,34 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
         nativityControl.setFilterFolder(syncDir.toString());
 
         // Make Goobox a system folder
-        DosFileAttributeView attr = Files.getFileAttributeView(syncDir, DosFileAttributeView.class);
-        try {
-            attr.setSystem(true);
-        } catch (IOException e) {
-            logger.error("Cannot set system folder", e);
+        if (OSDetector.isWindows()) {
+            DosFileAttributeView attr = Files.getFileAttributeView(syncDir, DosFileAttributeView.class);
+            try {
+                attr.setSystem(true);
+            } catch (IOException e) {
+                logger.error("Cannot set system folder", e);
+            }
         }
 
         fileIconControl = FileIconControlUtil.getFileIconControl(nativityControl, this);
         fileIconControl.enableFileIcons();
+
+        // Register icons
+        if (OSDetector.isApple() || OSDetector.isLinux()) {
+
+            final Path resourceDir = Paths.get(System.getProperty("goobox.resource", "."));
+            for (OverlayIcon state : OverlayIcon.values()) {
+
+                final Path icon = resourceDir.resolve(String.format("overlay_%s.icns", state.name())).toAbsolutePath();
+                if (Files.exists(icon)) {
+                    logger.debug("Register {} with ID {} ({})", icon, String.valueOf(state.id()), state);
+                    fileIconControl.registerIconWithId(
+                            icon.toAbsolutePath().toString(), state.name(), String.valueOf(state.id()));
+                }
+
+            }
+
+        }
 
         /* Context Menus */
         // No context menu yet
@@ -116,7 +131,7 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
     }
 
     public void setOK() {
-        if (!OSDetector.isWindows()) {
+        if (!OSDetector.isWindows() && !OSDetector.isApple()) {
             return;
         }
 
@@ -125,7 +140,7 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
     }
 
     public void setSynchronizing() {
-        if (!OSDetector.isWindows()) {
+        if (!OSDetector.isWindows() && !OSDetector.isApple()) {
             return;
         }
 
@@ -134,7 +149,7 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
     }
 
     public void shutdown() {
-        if (!OSDetector.isWindows()) {
+        if (!OSDetector.isWindows() && !OSDetector.isApple()) {
             return;
         }
 
