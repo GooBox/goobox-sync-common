@@ -37,6 +37,7 @@ import com.liferay.nativity.modules.fileicon.FileIconControl;
 import com.liferay.nativity.modules.fileicon.FileIconControlCallback;
 import com.liferay.nativity.modules.fileicon.FileIconControlUtil;
 import com.liferay.nativity.util.OSDetector;
+import java.io.UncheckedIOException;
 
 public class OverlayHelper implements FileIconControlCallback, ContextMenuControlCallback {
 
@@ -181,7 +182,7 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
                         .map(iconProvider::getIcon)
                         .map(OverlayIcon::id)
                         .reduce(OverlayIcon.NONE.id(), Integer::max);
-            } catch (IOException e) {
+            } catch (IOException | UncheckedIOException e) {
                 logger.error("Failed walking the file tree", e);
             }
         }
