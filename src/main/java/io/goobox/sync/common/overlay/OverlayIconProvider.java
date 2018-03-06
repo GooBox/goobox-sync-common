@@ -19,7 +19,7 @@ package io.goobox.sync.common.overlay;
 import java.nio.file.Path;
 
 public interface OverlayIconProvider {
-    
+
     public OverlayIcon getIcon(Path path);
 
 }
