@@ -6,11 +6,11 @@ cache:
   - "$HOME/.m2"
 deploy:
   provider: bintray
-  file: target/goobox-sync-common-0.0.6.jar
+  file: bintray.json
   user: jkawamoto
   key:
     secure: WV05BFxum9EKEAQnYbE/oyd3adIcWbe2pkmWkxygv9orNBztPC7haMmoeKDmCAC9LyXP0PR82kHXTM06E1NaiKEn/SG3w8QBJJeD3z3pF3jCQuN6yQidgw/PIpa5Z57fnOiQgYrTe9gq2QOwEYWkly5+D2EzAamv5TZ55SOTI9rS5c6/x7XNlG/oZOaVubm29s1VLD6s8ksOs4FbWrbP7WeSvepjAqt6Kjwrtxi0iaG6NnDeJgNQagU9m6+KWetGpzIOLPBULUBv54107hrPgtGXDjdRvK39gXJKm683cX3udsy/ccrfGA33dATqXKKFV3EiIhsgS88c3v/NUt/r8oZv/BbpAKQRRu8l7tPYKUZQMaw4pZ5OZPg2M0zUwRcnrghZBy8q/QpHQ1DddQcGF20FVeTGfYUu6K30mSmoGiijsNmH6Cjnwl1z2WnxJKnwG3BVjNfqIVb30cUSVYdL4ENkvZGE5fwjHNnTMGnCeaQcTJjInKjk7ijXXh56l4QYcapAd+pvZfn6/nvV7D9n8yeLF/jVPsopZNR7dCKv2JVRdHtAOCYgI+TIrNFGoKt8uO2prDvYnQKHcW6HCiX5OExkzBmM8DfrOHfHsw9DTxiEV75QzeGvtPMKXbb7K3/6aMGf9ptRp00AWJWwN3OEuLvt6LBCBYgKaoMkSThdmaA=
   skip_cleanup: true
   on:
-    tags: true
     repo: GooBox/goobox-sync-common
+    tags: true
