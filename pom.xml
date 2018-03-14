@@ -77,7 +77,7 @@
     <dependency>
       <groupId>org.dizitart</groupId>
       <artifactId>nitrite</artifactId>
-      <version>2.0.1</version>
+      <version>2.1.1</version>
     </dependency>
     <dependency>
       <groupId>net.harawata</groupId>
@@ -87,7 +87,7 @@
     <dependency>
       <groupId>net.java.dev.jna</groupId>
       <artifactId>jna-platform</artifactId>
-      <version>4.2.2</version>
+      <version>4.5.1</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
@@ -100,9 +100,9 @@
       <version>2.9.9</version>
     </dependency>
     <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-core</artifactId>
-        <version>1.2.3</version>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <version>1.2.3</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -113,7 +113,7 @@
     <dependency>
       <groupId>org.jmockit</groupId>
       <artifactId>jmockit</artifactId>
-      <version>1.36</version>
+      <version>1.38</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
