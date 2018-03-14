@@ -119,6 +119,8 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
                     logger.debug("Register {} with ID {} ({})", icon, String.valueOf(state.id()), state);
                     fileIconControl.registerIconWithId(
                             icon.toAbsolutePath().toString(), state.name(), String.valueOf(state.id()));
+                } else {
+                    logger.warn("Cannot find overlay icon {} for ID {} ({})", icon, String.valueOf(state.id()), state);
                 }
 
             }
