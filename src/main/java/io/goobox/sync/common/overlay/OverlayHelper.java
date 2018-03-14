@@ -16,18 +16,6 @@
  */
 package io.goobox.sync.common.overlay;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.DosFileAttributeView;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.liferay.nativity.control.NativityControl;
 import com.liferay.nativity.control.NativityControlUtil;
 import com.liferay.nativity.modules.contextmenu.ContextMenuControlCallback;
@@ -37,7 +25,18 @@ import com.liferay.nativity.modules.fileicon.FileIconControl;
 import com.liferay.nativity.modules.fileicon.FileIconControlCallback;
 import com.liferay.nativity.modules.fileicon.FileIconControlUtil;
 import com.liferay.nativity.util.OSDetector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.DosFileAttributeView;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class OverlayHelper implements FileIconControlCallback, ContextMenuControlCallback {
 
@@ -171,7 +170,7 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
 
     public void refresh(Path path) {
         if (fileIconControl != null && path != null) {
-            String[] pathAndParents = Stream.iterate(path, p -> p.getParent())
+            String[] pathAndParents = Stream.iterate(path, Path::getParent)
                     .limit(syncDir.relativize(path).getNameCount())
                     .map(Path::toString)
                     .toArray(String[]::new);
@@ -181,7 +180,7 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
 
     private void refresh() {
         if (fileIconControl != null) {
-            fileIconControl.refreshIcons(new String[] { syncDir.toString() });
+            fileIconControl.refreshIcons(new String[]{syncDir.toString()});
         }
     }
 
@@ -219,7 +218,7 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
 
         contextMenuItem.setContextMenuAction(contextMenuAction);
 
-        List<ContextMenuItem> contextMenuItems = new ArrayList<ContextMenuItem>();
+        List<ContextMenuItem> contextMenuItems = new ArrayList<>();
         contextMenuItems.add(contextMenuItem);
 
         // Mac Finder Sync will only show the parent level of context menus
