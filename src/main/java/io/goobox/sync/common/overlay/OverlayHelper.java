@@ -36,6 +36,9 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.DosFileAttributeView;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
 public class OverlayHelper implements FileIconControlCallback, ContextMenuControlCallback {
@@ -47,6 +50,7 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
 
     private NativityControl nativityControl;
     private FileIconControl fileIconControl;
+    private Future<?> initializeResult;
 
     private int globalStateIconId = OverlayIcon.NONE.id();
 
@@ -63,11 +67,13 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
         nativityControl = NativityControlUtil.getNativityControl();
 
         if (nativityControl != null) {
-            new Thread(this::init).start();
+            initializeResult = Executors.newSingleThreadExecutor().submit(this::init);
         }
     }
 
     private void init() {
+        Thread.currentThread().setName("Init overlay icons");
+
         synchronized (this) {
             while (!shutdown) {
                 if (nativityControl.connect()) {
@@ -91,8 +97,6 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
         if (shutdown) {
             return;
         }
-
-        nativityControl.setFilterFolder(syncDir.toString());
 
         // Make Goobox a system folder
         if (OSDetector.isWindows()) {
@@ -118,6 +122,11 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
                     logger.debug("Register {} with ID {} ({})", icon, String.valueOf(state.id()), state);
                     fileIconControl.registerIconWithId(
                             icon.toAbsolutePath().toString(), state.name(), String.valueOf(state.id()));
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        logger.warn("Interrupted while registering overlay icons: {}", e.getMessage());
+                    }
                 } else {
                     logger.warn("Cannot find overlay icon {} for ID {} ({})", icon, String.valueOf(state.id()), state);
                 }
@@ -126,9 +135,13 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
 
         }
 
+        nativityControl.setFilterFolder(syncDir.toString());
+
         /* Context Menus */
         // No context menu yet
         // ContextMenuControlUtil.getContextMenuControl(nativityControl, this);refresh
+
+        logger.debug("OverlayHelper has been initialized");
     }
 
     public void setOK() {
@@ -174,13 +187,22 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
                     .limit(syncDir.relativize(path).getNameCount())
                     .map(Path::toString)
                     .toArray(String[]::new);
-            fileIconControl.refreshIcons(pathAndParents);
+            refreshIcons(pathAndParents);
         }
     }
 
     private void refresh() {
         if (fileIconControl != null) {
-            fileIconControl.refreshIcons(new String[]{syncDir.toString()});
+            refreshIcons(new String[]{syncDir.toString()});
+        }
+    }
+
+    private void refreshIcons(String[] paths) {
+        try {
+            initializeResult.get();
+            fileIconControl.refreshIcons(paths);
+        } catch (InterruptedException | ExecutionException e) {
+            logger.warn("Failed to initialize overlay icons: {}", e.getMessage());
         }
     }
 
