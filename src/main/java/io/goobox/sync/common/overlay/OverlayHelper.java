@@ -36,9 +36,8 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.DosFileAttributeView;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.stream.Stream;
 
 public class OverlayHelper implements FileIconControlCallback, ContextMenuControlCallback {
@@ -50,7 +49,7 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
 
     private NativityControl nativityControl;
     private FileIconControl fileIconControl;
-    private Future<?> initializeResult;
+    private BlockingQueue<String[]> queue = new LinkedBlockingDeque<>();
 
     private int globalStateIconId = OverlayIcon.NONE.id();
 
@@ -67,7 +66,7 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
         nativityControl = NativityControlUtil.getNativityControl();
 
         if (nativityControl != null) {
-            initializeResult = Executors.newSingleThreadExecutor().submit(this::init);
+            new Thread(this::init).start();
         }
     }
 
@@ -142,6 +141,14 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
         // ContextMenuControlUtil.getContextMenuControl(nativityControl, this);refresh
 
         logger.debug("OverlayHelper has been initialized");
+        try {
+            while (!shutdown) {
+                this.refreshIcons(this.queue.take());
+            }
+        } catch (InterruptedException e) {
+            logger.warn("Thread for overlay icons was interrupted: {}", e.getMessage());
+        }
+
     }
 
     public void setOK() {
@@ -187,23 +194,18 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
                     .limit(syncDir.relativize(path).getNameCount())
                     .map(Path::toString)
                     .toArray(String[]::new);
-            refreshIcons(pathAndParents);
+            this.queue.offer(pathAndParents);
         }
     }
 
     private void refresh() {
         if (fileIconControl != null) {
-            refreshIcons(new String[]{syncDir.toString()});
+            this.queue.offer(new String[]{syncDir.toString()});
         }
     }
 
     private void refreshIcons(String[] paths) {
-        try {
-            initializeResult.get();
-            fileIconControl.refreshIcons(paths);
-        } catch (InterruptedException | ExecutionException e) {
-            logger.warn("Failed to initialize overlay icons: {}", e.getMessage());
-        }
+        fileIconControl.refreshIcons(paths);
     }
 
     /* FileIconControlCallback used by Windows and Mac */
