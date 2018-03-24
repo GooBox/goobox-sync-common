@@ -121,6 +121,8 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
                     logger.debug("Register {} with ID {} ({})", icon, String.valueOf(state.id()), state);
                     fileIconControl.registerIconWithId(
                             icon.toAbsolutePath().toString(), state.name(), String.valueOf(state.id()));
+                    // registerIconWithId needs to wait some seconds so that the FinderSyncExtension reads the previous
+                    // message and doesn't drop new one.
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
