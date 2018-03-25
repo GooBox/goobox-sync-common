@@ -13,16 +13,16 @@
     ]
   },
   "version": {
-    "name": "0.0.7"
+    "name": "0.0.8"
   },
   "files": [
     {
       "includePattern": "target/(.*.jar)",
-      "uploadPattern": "io/goobox/goobox-sync-common/0.0.7/$1"
+      "uploadPattern": "io/goobox/goobox-sync-common/0.0.8/$1"
     },
     {
       "includePattern": "pom.xml",
-      "uploadPattern": "io/goobox/goobox-sync-common/0.0.7/goobox-sync-common-0.0.7.pom"
+      "uploadPattern": "io/goobox/goobox-sync-common/0.0.8/goobox-sync-common-0.0.8.pom"
     }
   ],
   "publish": true

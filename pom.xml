@@ -6,7 +6,7 @@
 
   <groupId>io.goobox</groupId>
   <artifactId>goobox-sync-common</artifactId>
-  <version>0.0.7</version>
+  <version>0.0.8</version>
   <packaging>jar</packaging>
 
   <name>Goobox common library for sync apps</name>
