@@ -113,8 +113,20 @@ public class OverlayHelper implements FileIconControlCallback, ContextMenuContro
         // Register icons
         if (OSDetector.isApple() || OSDetector.isLinux()) {
 
+            // The above `enableFileIcons` method returns immediately but it needs more time to initialize
+            // FinderSyncExtension.
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                logger.warn("Interrupted while registering overlay icons: {}", e.getMessage());
+            }
+
             final Path resourceDir = Paths.get(System.getProperty("goobox.resource", "."));
             for (OverlayIcon state : OverlayIcon.values()) {
+
+                if (state == OverlayIcon.NONE) {
+                    continue;
+                }
 
                 final Path icon = resourceDir.resolve(String.format("overlay_%s.icns", state.name())).toAbsolutePath();
                 if (Files.exists(icon)) {
